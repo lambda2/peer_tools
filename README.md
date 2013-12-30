@@ -1,4 +1,4 @@
-peer_tools
+Peer Tools
 ==========
 
 Tools for peer correcting.
