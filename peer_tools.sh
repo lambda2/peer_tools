@@ -312,10 +312,31 @@ remove_credentials_file () {
 	fi
 }
 
+check_updates () {
+	echo "-> Fetching the latest changes from the git..."
+	git fetch -q origin
+	echo "-> Checking if there is some update to install..."
+	diff=`git cherry master origin/master`
+	if [ "$diff" = "" ]; then
+		echo "-> No updates available."
+	else
+		echo "-> Updates are available !"
+		echo "-> Latest update : `git log -1 --pretty=format:"%s"`"
+		ask "-> Would you like to install that update ?" "y"
+		result=$?
+		if ($result == 1); then
+			echo "-> Merging..."
+			git merge -q origin/master
+			echo "-> Merging done."
+		fi
+	fi
+	exit
+}
+
 main () {
 	check_credentials
 	PS3='-> Please enter your choice : '
-	options=("Clone remaining corrections" "Get phone numbers of remaining corrections (ldap - inside 42)" "Get phone numbers of peer correctors (ldap - inside 42)" "Get phone numbers of remaining corrections (dashboard - inside/outside 42)" "Get phone numbers of peer correctors (dashboard - inside/outside 42)" "Stalk someone with his id" "Remove credentials file" "Quit")
+	options=("Clone remaining corrections" "Get phone numbers of remaining corrections (ldap - inside 42)" "Get phone numbers of peer correctors (ldap - inside 42)" "Get phone numbers of remaining corrections (dashboard - inside/outside 42)" "Get phone numbers of peer correctors (dashboard - inside/outside 42)" "Stalk someone with his id" "Remove credentials file" "Check for updates" "Quit")
 	select opt in "${options[@]}"
 	do
 		case $opt in
@@ -339,6 +360,9 @@ main () {
 				;;
 			"Remove credentials file")
 				remove_credentials_file
+				;;
+			"Check for updates")
+				check_updates
 				;;
 			"Quit")
 				break
