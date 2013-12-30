@@ -147,8 +147,8 @@ clone_remaining_corrections () {
 
 get_remaining_corrections_numbers () {
 	echo "-> Getting remaining corrections from intra..."
-	wget -qO- --post-data "login=${login_url}&password=${password_url}" https://intra.42.fr | sed -n 's/^.*devez noter le groupe [A-Za-z0-9]* [A-Za-z0-9]* \([A-Za-z0-9_-]*\).*$/\1/p' | while read -r line ; do
-		phone=`ldapsearch -Q uid=$line mobile-phone | sed -n 's/^mobile-phone: \([0-9\ ]*\)$/\1/p' | tr -d ' ' | sed 's/.\{2\}/& /g'`
+	wget -qO- --post-data "login=${login_url}&password=${password_url}" https://intra.42.fr | sed -n 's/^.*devez noter le groupe [A-Za-z0-9]* [A-Za-z0-9]* \([A-Za-z0-9_+-]*\).*$/\1/p' | while read -r line ; do
+	phone=`ldapsearch -Q uid=$line mobile-phone | sed -n 's/^mobile-phone: \([0-9\ _+-]*\)$/\1/p' | tr -d ' ' | sed 's/+33/0/g' | sed 's/.\{2\}/& /g'`
 		if [ "$phone" = "" ]; then
 			phone="not found"
 		fi
@@ -159,8 +159,8 @@ get_remaining_corrections_numbers () {
 
 get_peer_correctors_numbers () {
 	echo "-> Getting peer correctors from intra..."
-	wget -qO- --post-data "login=${login_url}&password=${password_url}" https://intra.42.fr | sed -n 's/^.*par <a .*>\([A-Za-z0-9_-]*\)<\/a>.*$/\1/p' | while read -r line ; do
-		phone=`ldapsearch -Q uid=$line mobile-phone | sed -n 's/^mobile-phone: \([0-9\ ]*\)$/\1/p' | tr -d ' ' | sed 's/.\{2\}/& /g'`
+	wget -qO- --post-data "login=${login_url}&password=${password_url}" https://intra.42.fr | sed -n 's/^.*par <a .*>\([A-Za-z0-9_+-]*\)<\/a>.*$/\1/p' | while read -r line ; do
+	phone=`ldapsearch -Q uid=$line mobile-phone | sed -n 's/^mobile-phone: \([0-9\ _+-]*\)$/\1/p' | tr -d ' ' | sed 's/+33/0/g' | sed 's/.\{2\}/& /g'`
 		if [ "$phone" = "" ]; then
 			phone="not found"
 		fi
@@ -186,11 +186,11 @@ get_remaining_corrections_numbers_outside () {
 
 			content=`wget -qO- --load-cookies $base/cookies.txt "https://dashboard.42.fr/user/profile/${line}/"`
 			if echo $content | grep -q "UID"; then
-				mobile=`echo $content | sed -nE "s/^.*<dt>Mobile<\/dt>[[:blank:]]+<dd>([0-9\ _-]+)<\/dd>.*$/\1/p"`
+				mobile=`echo $content | sed -nE "s/^.*<dt>Mobile<\/dt>[[:blank:]]+<dd>([0-9\ _+-]+)<\/dd>.*$/\1/p"`
 				if [ "$mobile" = "" ]; then
 					mobile="not found"
 				else
-					mobile=`echo $mobile | tr -d ' ' | sed 's/.\{2\}/& /g'`
+					mobile=`echo $mobile | tr -d ' ' | sed 's/+33/0/g' | sed 's/.\{2\}/& /g'`
 				fi
 				online=`echo $content | sed -nE "s/^.*<dt>Latest location<\/dt>[[:blank:]]+<dd>(e[[:digit:]]+r[[:digit:]]+p[[:digit:]]+)\.42\.fr.*<\/dd>.*$/\1/p"`
 				if [ "$online" = "" ]; then
@@ -228,11 +228,11 @@ get_peer_correctors_numbers_outside () {
 		wget -qO- --post-data "login=${login_url}&password=${password_url}" https://intra.42.fr | sed -n 's/^.*par <a .*>\([A-Za-z0-9_-]*\)<\/a>.*$/\1/p' | while read -r line ; do
 			content=`wget -qO- --load-cookies $base/cookies.txt "https://dashboard.42.fr/user/profile/${line}/"`
 			if echo $content | grep -q "UID"; then
-				mobile=`echo $content | sed -nE "s/^.*<dt>Mobile<\/dt>[[:blank:]]+<dd>([0-9\ _-]+)<\/dd>.*$/\1/p"`
+				mobile=`echo $content | sed -nE "s/^.*<dt>Mobile<\/dt>[[:blank:]]+<dd>([0-9\ _+-]+)<\/dd>.*$/\1/p"`
 				if [ "$mobile" = "" ]; then
 					mobile="not found"
 				else
-					mobile=`echo $mobile | tr -d ' ' | sed 's/.\{2\}/& /g'`
+					mobile=`echo $mobile | tr -d ' ' | sed 's/+33/0/g' | sed 's/.\{2\}/& /g'`
 				fi
 				online=`echo $content | sed -nE "s/^.*<dt>Latest location<\/dt>[[:blank:]]+<dd>(e[[:digit:]]+r[[:digit:]]+p[[:digit:]]+)\.42\.fr.*<\/dd>.*$/\1/p"`
 				if [ "$online" = "" ]; then
