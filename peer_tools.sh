@@ -182,7 +182,7 @@ get_remaining_corrections_numbers_outside () {
 	content=`wget -qO- --keep-session-cookies --save-cookies $base/cookies.txt --load-cookies $base/cookies.txt --post-data "csrfmiddlewaretoken=${token_url}&username=${login_url}&password=${password_url}&next=" "https://dashboard.42.fr/login/"`
 	if echo $content | grep -q "Hello"; then
 		echo "-> Getting remaining corrections from intra..."
-		wget -qO- --post-data "login=${login_url}&password=${password}" https://intra.42.fr | sed -n 's/^.*devez noter le groupe [A-Za-z0-9]* [A-Za-z0-9]* \([A-Za-z0-9_-]*\).*$/\1/p' | while read -r line ; do
+		wget -qO- --post-data "login=${login_url}&password=${password_url}" https://intra.42.fr | sed -n 's/^.*devez noter le groupe [A-Za-z0-9]* [A-Za-z0-9]* \([A-Za-z0-9_-]*\).*$/\1/p' | while read -r line ; do
 
 			content=`wget -qO- --load-cookies $base/cookies.txt "https://dashboard.42.fr/user/profile/${line}/"`
 			if echo $content | grep -q "UID"; then
