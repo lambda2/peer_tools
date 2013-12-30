@@ -4,6 +4,9 @@ base=`dirname $0`
 credentials=${base}"/credentials"
 login=""
 password=""
+login_url=""
+password_url=""
+token_url=""
 
 ask () {
 	while [ "$yn" = "" ]; do
@@ -84,6 +87,8 @@ check_credentials () {
 		fi
 		echo
 	fi
+	login_url=`echo $login | sed -f $base/urlencode.sed`
+	password_url=`echo $password | sed -f $base/urlencode.sed`
 	if [ -f $credentials ]; then
 		chmod 000 $credentials
 	fi
@@ -93,7 +98,7 @@ clone_remaining_corrections () {
 	status=0
 	attempts=0
 	echo "-> Getting remaining corrections from intra..."
-	wget -qO- --keep-session-cookies --save-cookies $base/cookies.txt --post-data "login=$login&password=$password" https://intra.42.fr | sed -nE "s/^.*Vous <a href=\"([A-Za-z0-9/_-]+)\">devez noter.*$/\1/p" | while read -r line ; do
+	wget -qO- --keep-session-cookies --save-cookies $base/cookies.txt --post-data "login=${login_url}&password=${password_url}" https://intra.42.fr | sed -nE "s/^.*Vous <a href=\"([A-Za-z0-9/_-]+)\">devez noter.*$/\1/p" | while read -r line ; do
 		uid=`echo $line | sed -nE "s/^.*[[:digit:]]+-([A-Za-z0-9_-]+)\/$/\1/p"`
 		url="https://intra.42.fr"${line}
 		repo=${url}"repository?format=json"
@@ -142,7 +147,7 @@ clone_remaining_corrections () {
 
 get_remaining_corrections_numbers () {
 	echo "-> Getting remaining corrections from intra..."
-	wget -qO- --post-data "login=${login}&password=${password}" https://intra.42.fr | sed -n 's/^.*devez noter le groupe [A-Za-z0-9]* [A-Za-z0-9]* \([A-Za-z0-9_-]*\).*$/\1/p' | while read -r line ; do
+	wget -qO- --post-data "login=${login_url}&password=${password_url}" https://intra.42.fr | sed -n 's/^.*devez noter le groupe [A-Za-z0-9]* [A-Za-z0-9]* \([A-Za-z0-9_-]*\).*$/\1/p' | while read -r line ; do
 		phone=`ldapsearch -Q uid=$line mobile-phone | sed -n 's/^mobile-phone: \([0-9\ ]*\)$/\1/p' | tr -d ' ' | sed 's/.\{2\}/& /g'`
 		if [ "$phone" = "" ]; then
 			phone="not found"
@@ -154,7 +159,7 @@ get_remaining_corrections_numbers () {
 
 get_peer_correctors_numbers () {
 	echo "-> Getting peer correctors from intra..."
-	wget -qO- --post-data "login=${login}&password=${password}" https://intra.42.fr | sed -n 's/^.*par <a .*>\([A-Za-z0-9_-]*\)<\/a>.*$/\1/p' | while read -r line ; do
+	wget -qO- --post-data "login=${login_url}&password=${password_url}" https://intra.42.fr | sed -n 's/^.*par <a .*>\([A-Za-z0-9_-]*\)<\/a>.*$/\1/p' | while read -r line ; do
 		phone=`ldapsearch -Q uid=$line mobile-phone | sed -n 's/^mobile-phone: \([0-9\ ]*\)$/\1/p' | tr -d ' ' | sed 's/.\{2\}/& /g'`
 		if [ "$phone" = "" ]; then
 			phone="not found"
@@ -172,11 +177,12 @@ get_remaining_corrections_numbers_outside () {
 		echo "-> An error occured while trying to get the CSRF token. Please try again."
 		exit
 	fi
+	token_url=`echo $token | sed -f $base/urlencode.sed`
 	echo "-> Connecting to dashboard..."
-	content=`wget -qO- --keep-session-cookies --save-cookies $base/cookies.txt --load-cookies $base/cookies.txt --post-data "csrfmiddlewaretoken=${token}&username=${login}&password=${password}&next=" "https://dashboard.42.fr/login/"`
+	content=`wget -qO- --keep-session-cookies --save-cookies $base/cookies.txt --load-cookies $base/cookies.txt --post-data "csrfmiddlewaretoken=${token_url}&username=${login_url}&password=${password_url}&next=" "https://dashboard.42.fr/login/"`
 	if echo $content | grep -q "Hello"; then
 		echo "-> Getting remaining corrections from intra..."
-		wget -qO- --post-data "login=${login}&password=${password}" https://intra.42.fr | sed -n 's/^.*devez noter le groupe [A-Za-z0-9]* [A-Za-z0-9]* \([A-Za-z0-9_-]*\).*$/\1/p' | while read -r line ; do
+		wget -qO- --post-data "login=${login_url}&password=${password}" https://intra.42.fr | sed -n 's/^.*devez noter le groupe [A-Za-z0-9]* [A-Za-z0-9]* \([A-Za-z0-9_-]*\).*$/\1/p' | while read -r line ; do
 
 			content=`wget -qO- --load-cookies $base/cookies.txt "https://dashboard.42.fr/user/profile/${line}/"`
 			if echo $content | grep -q "UID"; then
@@ -214,11 +220,12 @@ get_peer_correctors_numbers_outside () {
 		echo "-> An error occured while trying to get the CSRF token. Please try again."
 		exit
 	fi
+	token_url=`echo $token | sed -f $base/urlencode.sed`
 	echo "-> Connecting to dashboard..."
-	content=`wget -qO- --keep-session-cookies --save-cookies $base/cookies.txt --load-cookies $base/cookies.txt --post-data "csrfmiddlewaretoken=${token}&username=${login}&password=${password}&next=" "https://dashboard.42.fr/login/"`
+	content=`wget -qO- --keep-session-cookies --save-cookies $base/cookies.txt --load-cookies $base/cookies.txt --post-data "csrfmiddlewaretoken=${token_url}&username=${login_url}&password=${password_url}&next=" "https://dashboard.42.fr/login/"`
 	if echo $content | grep -q "Hello"; then
 		echo "-> Getting peer correctors from intra..."
-		wget -qO- --post-data "login=${login}&password=${password}" https://intra.42.fr | sed -n 's/^.*par <a .*>\([A-Za-z0-9_-]*\)<\/a>.*$/\1/p' | while read -r line ; do
+		wget -qO- --post-data "login=${login_url}&password=${password_url}" https://intra.42.fr | sed -n 's/^.*par <a .*>\([A-Za-z0-9_-]*\)<\/a>.*$/\1/p' | while read -r line ; do
 			content=`wget -qO- --load-cookies $base/cookies.txt "https://dashboard.42.fr/user/profile/${line}/"`
 			if echo $content | grep -q "UID"; then
 				mobile=`echo $content | sed -nE "s/^.*<dt>Mobile<\/dt>[[:blank:]]+<dd>([0-9\ _-]+)<\/dd>.*$/\1/p"`
