@@ -254,6 +254,52 @@ get_peer_correctors_numbers_outside () {
 	exit
 }
 
+stalk () {
+	echo "-> Enter the id of the person you want to stalk : \c"
+	read id
+	while [ "$id" = "" ]; do
+		echo "-> Have you ever seen someone who has no name ?"
+		echo "-> Enter the id of the person you want to stalk : \c"
+		read id
+	done
+	echo "-> Loading dashboard index..."
+	wget -qO /dev/null --keep-session-cookies --save-cookies $base/cookies.txt "https://dashboard.42.fr"
+	token=`cat $base/cookies.txt | sed -nE "s/^.*csrftoken[[:blank:]]+(.*)$/\1/p"`
+	if [ "$token" = "" ]; then
+		echo "-> An error occured while trying to get the CSRF token. Please try again."
+		exit
+	fi
+	token_url=`echo $token | sed -f $base/urlencode.sed`
+	echo "-> Connecting to dashboard..."
+	content=`wget -qO- --keep-session-cookies --save-cookies $base/cookies.txt --load-cookies $base/cookies.txt --post-data "csrfmiddlewaretoken=${token_url}&username=${login_url}&password=${password_url}&next=" "https://dashboard.42.fr/login/"`
+	if echo $content | grep -q "Hello"; then
+		echo "-> Getting informations on the user..."
+		content=`wget -qO- --load-cookies $base/cookies.txt "https://dashboard.42.fr/user/profile/${id}/"`
+		if echo $content | grep -q "UID"; then
+			mobile=`echo $content | sed -nE "s/^.*<dt>Mobile<\/dt>[[:blank:]]+<dd>([0-9\ _+-]+)<\/dd>.*$/\1/p"`
+			if [ "$mobile" = "" ]; then
+				mobile="not found"
+			else
+				mobile=`echo $mobile | tr -d ' ' | sed 's/+33/0/g' | sed 's/.\{2\}/& /g'`
+			fi
+			online=`echo $content | sed -nE "s/^.*<dt>Latest location<\/dt>[[:blank:]]+<dd>(e[[:digit:]]+r[[:digit:]]+p[[:digit:]]+)\.42\.fr.*<\/dd>.*$/\1/p"`
+			if [ "$online" = "" ]; then
+				online="offline"
+			fi
+			printf "%12s : %s (%s)\n" "$id" "$mobile" "$online"
+		else
+			echo "-> An error occured while trying to get informations of the user. Please try again."
+			rm -f $base/cookies.txt
+			exit
+		fi
+	else
+		echo "-> An error occured while trying to login to the dashboard. Please try again."
+		rm -f $base/cookies.txt
+		exit
+	fi
+	rm -f $base/cookies.txt
+	exit
+}
 
 remove_credentials_file () {
 	if [ -f $credentials ]; then
@@ -269,7 +315,7 @@ remove_credentials_file () {
 main () {
 	check_credentials
 	PS3='-> Please enter your choice : '
-	options=("Clone remaining corrections" "Get phone numbers of remaining corrections (ldap - inside 42)" "Get phone numbers of peer correctors (ldap - inside 42)" "Get phone numbers of remaining corrections (dashboard - inside/outside 42)" "Get phone numbers of peer correctors (dashboard - inside/outside 42)" "Remove credentials file" "Quit")
+	options=("Clone remaining corrections" "Get phone numbers of remaining corrections (ldap - inside 42)" "Get phone numbers of peer correctors (ldap - inside 42)" "Get phone numbers of remaining corrections (dashboard - inside/outside 42)" "Get phone numbers of peer correctors (dashboard - inside/outside 42)" "Stalk someone with his id" "Remove credentials file" "Quit")
 	select opt in "${options[@]}"
 	do
 		case $opt in
@@ -287,6 +333,9 @@ main () {
 				;;
 			"Get phone numbers of peer correctors (dashboard - inside/outside 42)")
 				get_peer_correctors_numbers_outside
+				;;
+			"Stalk someone with his id")
+				stalk
 				;;
 			"Remove credentials file")
 				remove_credentials_file
