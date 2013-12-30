@@ -6,7 +6,8 @@ Tools for peer correcting.
 Usage :
 -------
 
-This tool requires your access to intra.42.fr and dashboard.42.fr. 
+This tool requires your access to intra.42.fr and dashboard.42.fr.
+
 At first use, you will be invited to enter your credentials (your real 42 credentials). If you want to, your credentials can be saved to a file for easy further usage.
 
 Options :
@@ -21,5 +22,6 @@ Options :
 Suggestions / Bugs :
 --------------------
 
-For suggestions or bug reports, you can contact me on jabber (jlejeune), or send me an email (jlejeune@student.42.fr). 
+For suggestions or bug reports, you can contact me on jabber (jlejeune), or send me an email (jlejeune@student.42.fr).
+
 I love coffee too. O_O
