@@ -324,11 +324,11 @@ check_updates () {
 		echo "-> Latest update : `git log -1 --pretty=format:"%s"`"
 		ask "-> Would you like to install that update ?" "y"
 		result=$?
-		if ($result == 1); then
-			echo "-> Merging..."
-			git fetch origin master
-			git merge -s recursive -X theirs origin/master
-			echo "-> Merging done."
+		if [ $result == 1 ]; then
+			echo "-> Pulling..."
+			git reset -q --hard
+			git pull -q
+			echo "-> Pulling done."
 		fi
 	fi
 	exit
