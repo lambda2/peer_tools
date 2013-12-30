@@ -326,7 +326,8 @@ check_updates () {
 		result=$?
 		if ($result == 1); then
 			echo "-> Merging..."
-			git merge -q origin/master
+			git fetch origin master
+			git merge -s recursive -X theirs origin/master
 			echo "-> Merging done."
 		fi
 	fi
