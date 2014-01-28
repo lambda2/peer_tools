@@ -14,10 +14,24 @@ Options :
 ---------
 
 - Clone remaining corrections
-- Get phone numbers of remaining corrections (ldap - inside 42)
-- Get phone numbers of peer correctors (ldap - inside 42)
-- Get phone numbers of remaining corrections (dashboard - inside/outside 42)
-- Get phone numbers of peer correctors (dashboard - inside/outside 42)
+  Clones all your remaining corrections
+- Get phone numbers of corrections
+  Displays phone numbers and locations of your corrections
+- Get phone numbers of correctors
+  Displays phone numbers and locations of your correctors
+- Stalk people with their ids
+  Displays phone numbers and locations of the given ids
+- Clean corrections folders
+  Does "make fclean" in all subdirectories of your corrections folder
+
+Version 2 :
+-----------
+
+The second version of Peer Tools (29/01/14) was rewritten from scratch.
+Error handling has been improved. They are clearer and most error cases are now supported.
+Multiple projects handling has been added (either for git clones or phone numbers searching).
+Curl is now used instead of wget, which increases compatibility.
+The source code is clearer and each function is commented for better maintainability.
 
 Suggestions / Bugs :
 --------------------
@@ -25,3 +39,8 @@ Suggestions / Bugs :
 For suggestions or bug reports, you can contact me on jabber (jlejeune), or send me an email (jlejeune@student.42.fr).
 
 I love coffee too. O_O
+
+License :
+---------
+
+Peer Tools is available under the [GNU General Public License, version 3](LICENSE).
