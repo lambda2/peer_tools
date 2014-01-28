@@ -6,7 +6,7 @@
 #    By: jlejeune <jlejeune@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/01/27 15:29:24 by jlejeune          #+#    #+#              #
-#    Updated: 2014/01/28 14:46:05 by jlejeune         ###   ########.fr        #
+#    Updated: 2014/01/28 17:04:56 by jlejeune         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -198,6 +198,38 @@ recursive_fclean ()
 			if [ ${response} == 1 ]
 			then
 				`find . ! -path '*/\.*' -type d -exec make -C "{}" fclean \; > /dev/null 2>&1`
+				success "-> Done !"
+			else
+				error "-> Aborted."
+			fi
+		else
+			error "-> Cannot find current folder, aborting."
+		fi
+	else
+		error "-> Aborted."
+	fi
+}
+
+# Removes .git folder in each subfolder
+# returns : No return
+
+remove_git_folders ()
+{
+	echo "-> This option removes .git folder in each subfolder of the folder you're in."
+	echo "-> Make sure you are in your corrections folder for this option to work."
+	ask "-> Do you want to remove .git folders ?" "y"
+	response=${?}
+	if [ ${response} == 1 ]
+	then
+		path=`pwd`
+		if [ ! -z "${path}" ]
+		then
+			echo "-> You are actually in '${path}'."
+			ask "-> Is this your corrections folder ?" "y"
+			response=${?}
+			if [ ${response} == 1 ]
+			then
+				`find . -type d -name ".git" -exec rm -rf "{}" \; > /dev/null 2>&1`
 				success "-> Done !"
 			else
 				error "-> Aborted."

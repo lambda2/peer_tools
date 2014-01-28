@@ -6,7 +6,7 @@
 #    By: jlejeune <jlejeune@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/01/27 04:41:11 by jlejeune          #+#    #+#              #
-#    Updated: 2014/01/28 15:06:23 by jlejeune         ###   ########.fr        #
+#    Updated: 2014/01/28 17:05:24 by jlejeune         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,6 +39,7 @@ main ()
 			"Get phone numbers of correctors"
 			"Stalk people with their ids"
 			"Clean corrections folders"
+			"Remove .git folder in correction folders"
 			"Remove credentials file"
 			"Remove cookies"
 			"Check for updates"
@@ -50,6 +51,7 @@ main ()
 			"get_correctors_numbers"
 			"stalk_people"
 			"recursive_fclean"
+			"remove_git_folders"
 			"remove_credentials_file ${credentials_file}"
 			"remove_cookies"
 			"check_updates"
