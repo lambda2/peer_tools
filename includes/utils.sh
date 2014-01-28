@@ -6,7 +6,7 @@
 #    By: jlejeune <jlejeune@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/01/27 15:29:24 by jlejeune          #+#    #+#              #
-#    Updated: 2014/01/28 17:04:56 by jlejeune         ###   ########.fr        #
+#    Updated: 2014/01/28 17:11:59 by jlejeune         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -172,6 +172,8 @@ check_updates ()
 			git reset -q --hard
 			git pull -q
 			success "-> Update done, enjoy !"
+			cd - > /dev/null 2>&1
+			exit
 		fi
 	fi
 	cd - > /dev/null 2>&1
