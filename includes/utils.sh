@@ -6,7 +6,7 @@
 #    By: jlejeune <jlejeune@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/01/27 15:29:24 by jlejeune          #+#    #+#              #
-#    Updated: 2014/01/28 17:11:59 by jlejeune         ###   ########.fr        #
+#    Updated: 2014/01/28 17:25:15 by jlejeune         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -164,7 +164,8 @@ check_updates ()
 		success "-> No updates available."
 	else
 		success "-> Updated are available !"
-		echo "-> Latest update : `git log -1 --pretty=format:"%s"`"
+#		echo "-> Latest update : `git log -1 --pretty=format:"%s"`"
+		echo "-> Latest update : `git show master..origin/master -n 1 -s --format=%B`"
 		ask "-> Would you like to install the update ?" "y"
 		if [ ${?} == 1 ]
 		then
