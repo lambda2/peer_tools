@@ -6,7 +6,7 @@
 #    By: jlejeune <jlejeune@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/01/27 15:29:24 by jlejeune          #+#    #+#              #
-#    Updated: 2014/01/30 14:49:45 by jlejeune         ###   ########.fr        #
+#    Updated: 2014/01/30 18:36:45 by jlejeune         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -150,21 +150,35 @@ menu ()
 }
 
 # Checks for updates in the tool folder
+# [$1] : 1 for silent mode, 0 for verbose mode
 # returns : No return
 
 check_updates ()
 {
+	silent=0
+	if [ ! -z ${1} ] && [ ${1} == 1 ]
+	then
+		silent=1
+	fi
 	cd ${script_path} > /dev/null 2>&1
-	echo "-> Fetching the latest changes from the git..."
+	if [ ${silent} == 0 ]
+	then
+		echo "-> Fetching the latest changes from the git..."
+	fi
 	git fetch -q origin
-	echo "-> Checking if there is some update to install..."
+	if [ ${silent} == 0 ]
+	then
+		echo "-> Checking if there is some update to install..."
+	fi
 	diff=`git cherry master origin/master`
 	if [ -z "${diff}" ]
 	then
-		success "-> No updates available."
+		if [ ${silent} == 0 ]
+		then
+			success "-> No updates available."
+		fi
 	else
 		success "-> Updated are available !"
-#		echo "-> Latest update : `git log -1 --pretty=format:"%s"`"
 		echo "-> Latest update : `git show master..origin/master -n 1 -s --format=%B`"
 		ask "-> Would you like to install the update ?" "y"
 		if [ ${?} == 1 ]

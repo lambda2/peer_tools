@@ -6,7 +6,7 @@
 #    By: jlejeune <jlejeune@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/01/27 04:41:11 by jlejeune          #+#    #+#              #
-#    Updated: 2014/01/30 08:02:58 by jlejeune         ###   ########.fr        #
+#    Updated: 2014/01/30 18:38:48 by jlejeune         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,6 +30,7 @@ main ()
 		info "-> Verbose mode enabled."
 	fi
 	get_credentials "${credentials_file}"
+	check_updates 1
 	echo
 	while [ 42 ]
 	do
