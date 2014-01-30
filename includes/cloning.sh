@@ -6,7 +6,7 @@
 #    By: jlejeune <jlejeune@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/01/27 18:55:06 by jlejeune          #+#    #+#              #
-#    Updated: 2014/01/30 07:57:49 by jlejeune         ###   ########.fr        #
+#    Updated: 2014/01/30 14:58:07 by jlejeune         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -69,6 +69,7 @@ clone_remaining_corrections ()
 					project_name=`echo "${projects[${selected}]}" | sed -nE "${regex}" | tr '[:upper:]' '[:lower:]'`
 					if [ ! -z "${project_name}" ]
 					then
+						subfolder="${subfolder}/${project_name}"
 						if [ -d "${project_name}" ]
 						then
 							echo "-> The subfolder is already existing."
@@ -77,6 +78,7 @@ clone_remaining_corrections ()
 							if [ ! -d "${project_name}" ]
 							then
 								error "-> Cannot create subfolder, aborting."
+								return
 							fi
 						fi
 					else
@@ -179,7 +181,8 @@ clone_repositories ()
 		fi
 		echo "-> \033[4mCloning ${uid}'s repository\033[0m"
 		get_read_access "${url}"
-		if [ ${?} == 1 ]
+		response=${?}
+		if [ ${response} == 1 ]
 		then
 			success "-> We got read access to repository. Cloning..."
 			info "-> Getting vogsphere link..."
@@ -188,26 +191,31 @@ clone_repositories ()
 			repository=`echo "${content}" | tr -d "\n" | sed -nE "${regex}" | tr -d '\'`
 			if [ ! -z "${repository}" ]
 			then
-				if [ -d "${uid}" ]
+				if [ -d "${subfolder}/${uid}" ]
 				then
-					errro "-> This repository has alreade been cloned."
-					ask "-> Would you like to reclone it ?" "y"
-					if [ ${?} == 1 ]
-					then
-						info "-> Deleting folder \"${uid}\""
-						rm -rf "${uid}"
-						if [ -d "${uid}" ]
-						then
-							error "-> Cannot delete folder, aborting git clone."
-							continue
-						fi
-					fi
+					error "-> This repository has already been cloned. Switching to next."
+#					ask "-> Would you like to reclone it ?" "y"
+#					response="${?}"
+#					if [ ${response} == 1 ]
+#					then
+#						info "-> Deleting folder \"${uid}\""
+#						rm -rf "${uid}"
+#						if [ -d "${uid}" ]
+#						then
+#							error "-> Cannot delete folder, aborting git clone."
+#							continue
+#						fi
+#					else
+#						continue
+#					fi
+					continue
 				fi
 				echo "-> Cloning repository..."
+				info "-> git clone -q "${repository}" "${subfolder}/${uid}""
 				git_clone=`git clone -q "${repository}" "${subfolder}/${uid}" 2>&1`
 				if echo "${git_clone}" | grep -q "You appear to have cloned an empty repository."
 				then
-					echo "-> It appears that this correction will be ease. ;)"
+					echo "-> It appears that this correction will be easy. ;)"
 				fi
 				if [ -d "${subfolder}/${uid}" ]
 				then
