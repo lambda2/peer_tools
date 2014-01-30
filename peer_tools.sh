@@ -6,7 +6,7 @@
 #    By: jlejeune <jlejeune@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/01/27 04:41:11 by jlejeune          #+#    #+#              #
-#    Updated: 2014/01/28 17:05:24 by jlejeune         ###   ########.fr        #
+#    Updated: 2014/01/30 08:02:58 by jlejeune         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,8 +35,8 @@ main ()
 	do
 		options=(
 			"Clone remaining corrections"
-			"Get phone numbers of corrections"
-			"Get phone numbers of correctors"
+			"Get phone numbers of remaining corrections"
+			"Get phone numbers of remaining correctors"
 			"Stalk people with their ids"
 			"Clean corrections folders"
 			"Remove .git folder in correction folders"

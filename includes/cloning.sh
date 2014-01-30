@@ -6,7 +6,7 @@
 #    By: jlejeune <jlejeune@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/01/27 18:55:06 by jlejeune          #+#    #+#              #
-#    Updated: 2014/01/28 14:19:39 by jlejeune         ###   ########.fr        #
+#    Updated: 2014/01/30 07:57:49 by jlejeune         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -126,7 +126,8 @@ get_repository ()
 			info "-> Corrections list ending."
 			i=`expr ${i} - 1`
 		else
-			if echo "${line}" | grep -q "href="
+			uid=`echo "${line}" | sed -nE "${correction_uid_regex}"`
+			if [ ! -z "${uid}" ]
 			then
 				info "-> Correction found."
 				if [ -z "${corrections}" ]
